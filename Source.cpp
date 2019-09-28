@@ -22,6 +22,7 @@ bool outputs = false;
 bool names = false;
 bool modles = false;
 
+bool specialcase = false;
 void Inputdeal(std::string filename) {
 	std::fstream inputfile;
 	inputfile.open(filename, std::ios::in);
@@ -63,6 +64,18 @@ void Inputdeal(std::string filename) {
 			}
 			else if (paragraph == ".names") //boolean
 			{
+				if (specialcase == true)
+				{
+					it = outputnode.find(leaf[0]);
+					if (it != outputnode.end())
+					{
+						it->second = "0";
+					}
+					else
+					{
+						outputnode.insert(std::pair<std::string, std::string>(leaf[0], "0"));
+					}
+				}
 				leaf.clear();
 				inputs = false;
 				outputs = false;
@@ -98,6 +111,7 @@ void Inputdeal(std::string filename) {
 					
 					
 				}
+				if (leaf.size() == 1) specialcase = true;
 				
 				
 			}
@@ -117,90 +131,222 @@ void Inputdeal(std::string filename) {
 			}
 			else if (names)
 			{
-				std::string func = "";
-				for (int i = 0; i < paragraph.length(); i++)
+				if (specialcase == true)
 				{
-					if (paragraph[i] == '1')
+					it = outputnode.find(leaf[0]);
+					if (it != outputnode.end())
 					{
-						func += leaf[i];
+						it->second = "1";
 					}
-					else if (paragraph[i] == '0')
+					else
 					{
-						func += leaf[i];
-						func += "'";
+						outputnode.insert(std::pair<std::string, std::string>(leaf[0], "1"));
 					}
 				}
-				inputfile.getline(temp, std::size(temp));
-				std::stringstream ss;
-				ss.str(temp);
-				std::string temps;
-				while (1)
-				{
-					ss >> temps;
-					if (ss.eof())
+				else {
+					std::string func = "";
+					for (int i = 0; i < paragraph.length(); i++)
 					{
-						if (temps == "\\")
+						if (paragraph[i] == '1')
 						{
-							inputfile.getline(temp, std::size(temp));
-							ss.str(temp);
-							
+							func += leaf[i];
+							func += " ";
 						}
-						else
+						else if (paragraph[i] == '0')
 						{
-							if (temps == "1")
-							{
-								it = outputnode.find(leaf[leaf.size() - 1]);
-								if (it != outputnode.end())
-								{
-									it->second += "+";
-									it->second += func;
-								}
-								else
-								{
-									outputnode.insert(std::pair<std::string, std::string>(leaf[leaf.size() - 1], func));
-								}
-							}
-							else {
-								std::string re = "(";
-								re += func;
-								re += ")'";
-								it = outputnode.find(leaf[leaf.size() - 1]);
-								if (it != outputnode.end())
-								{
-									it->second += "+";
-									it->second += re;
-								}
-								else
-								{
-									outputnode.insert(std::pair<std::string, std::string>(leaf[leaf.size() - 1], re));
-								}
-							}
-							break;
+							func += leaf[i];
+							func += "' ";
 						}
 					}
-					else {
+					inputfile.getline(temp, std::size(temp));
+					std::stringstream ss;
+					ss.str(temp);
+					std::string temps;
+					while (1)
+					{
+						ss >> temps;
+						if (ss.eof())
+						{
+							if (temps == "\\")
+							{
+								inputfile.getline(temp, std::size(temp));
+								ss.str(temp);
+
+							}
+							else
+							{
+								if (temps == "1")
+								{
+									it = outputnode.find(leaf[leaf.size() - 1]);
+									if (it != outputnode.end())
+									{
+										it->second += " + ";
+										it->second += func;
+									}
+									else
+									{
+										outputnode.insert(std::pair<std::string, std::string>(leaf[leaf.size() - 1], func));
+									}
+								}
+								else {
+									std::string re = " ( ";
+									re += func;
+									re += " )' ";
+									it = outputnode.find(leaf[leaf.size() - 1]);
+									if (it != outputnode.end())
+									{
+										it->second += " + ";
+										it->second += re;
+									}
+									else
+									{
+										outputnode.insert(std::pair<std::string, std::string>(leaf[leaf.size() - 1], re));
+									}
+								}
+								break;
+							}
+						}
+						else {
+
+						}
+
 
 					}
-					
-				
 				}
 
 			}
 
 		}
+		else {
+			 inputfile.getline(temp, std::size(temp));
+		}
 
 	}
+	
+	
+
+}
+void outAncient() {
+	std::string str;
+	bool isfindp = false;
+	bool isfinds = false;
+	std::set<std::string>predecessor;
+	std::set<std::string>successor;
+	std::set<std::string>::iterator iter;
+	while (1)
+	{
+		predecessor.clear();
+		successor.clear();
+		isfindp = false;
+		isfinds = false;
+		std::cout << "Please input a node:";
+		std::cin >> str;
+		
+		if (str == "0") break;
+		
+		it = outputnode.find(str);
+		if (it == outputnode.end()) {}
+		else {
+			isfindp = true;
+			//std::cout << "predecessor : ";
+			if ((it->second == "1" || it->second == "0")&&it->second.length()==1) predecessor.insert("-");
+			else {
+				std::stringstream ss;
+				ss.str(it->second);
+				std::string tempswww;
+				while (1) {
+					ss >> tempswww;
+					if (tempswww == "(" || tempswww == ")'"||tempswww=="+") {}
+					if (tempswww[tempswww.length() - 1] == '\'')
+					{
+						std::string hj;
+						for (int i = 0; i < tempswww.length() - 1; i++)
+						{
+							hj += tempswww[i];
+						}
+						predecessor.insert(hj);
+					}
+					else {
+						if (tempswww == "0" || tempswww == "1"||tempswww=="+"|| tempswww == "(" || tempswww == ")'")
+						{
+						}
+						else {
+							predecessor.insert(tempswww);
+						}
+					}
+					if (ss.eof()) break;
+
+				}
+			}
+
+		}
+			
+			//std::cout << "\nsuccessor: ";
+			for (it = outputnode.begin(); it != outputnode.end(); it++)
+			{
+				std::stringstream ss;
+				ss.str(it->second);
+				std::string tempswww;
+				while (1) {
+					ss >> tempswww;
+					std::string strsec = str + "'";
+					if (tempswww == str || tempswww == strsec)
+					{
+						isfinds = true;
+						successor.insert(it->first);
+					}
+
+					if (ss.eof()) break;
+
+				}
+			}
+
+			
+
+		
+		
+	//out
+		if (isfindp == false && isfinds == false)
+		{
+			std::cout << "node " << str << " does not exist\n";
+		}
+		else
+		{
+			if (isfindp == false) predecessor.insert("-");
+			if (isfinds == false)successor.insert("-");
+			std::cout << "predecessor : ";
+			for (iter = predecessor.begin(); iter != predecessor.end(); iter++)
+			{
+				if (iter == predecessor.begin()) std::cout << *iter;
+				else std::cout << " , " << *iter;
+			}
+			std::cout << "\nsuccessor: ";
+			for (iter = successor.begin(); iter != successor.end(); iter++)
+			{
+				if (iter == successor.begin()) std::cout << *iter;
+				else std::cout << " , " << *iter;
+			}
+			std::cout << "\n";
+		}
+		
+	}
+}
+void outfunction()
+{
+	std::cout << "Node function:\n";
 	for (it = outputnode.begin(); it != outputnode.end(); it++)
 	{
-		std::cout << it->first << "\n" << it->second << "\n";
+		std::cout << it->first << " = " << it->second << "\n";
 	}
-
+	std::cout << "END\n";
 }
 
 int main()
 {
-	std::string name = "9symml.blif";
+	std::string name = "test.blif";
 	Inputdeal(name);
+	outAncient();
+	outfunction();
 	system("pause");
 	return 0;
 }
