@@ -9,6 +9,7 @@ std::string blifname; //blif專案名
 std::string Inputnode[999999]; //底層node
 std::string Outputnode[999999]; //輸出node
 char temp[999999];
+int t = 0;
 std::map<std::string, std::string>outputnode;
 std::map<std::string, std::string>::iterator it;
 std::set<std::string>node;
@@ -64,6 +65,11 @@ void Inputdeal(std::string filename) {
 			}
 			else if (paragraph == ".names") //boolean
 			{
+				/*std::cout << "test\n"<<t++;
+				if(t==33){
+				std::cout<<"dsad\n";
+				}*/
+
 				if (specialcase == true)
 				{
 					it = outputnode.find(leaf[0]);
@@ -75,6 +81,7 @@ void Inputdeal(std::string filename) {
 					{
 						outputnode.insert(std::pair<std::string, std::string>(leaf[0], "0"));
 					}
+					specialcase = false;
 				}
 				leaf.clear();
 				inputs = false;
@@ -92,18 +99,42 @@ void Inputdeal(std::string filename) {
 					{
 						if (temps == "\\")
 						{
-							leaf.push_back(temps);
+							//leaf.push_back(temps);
 							inputfile.getline(temp, std::size(temp));
+							ss.clear();
+							ss.str("");
+							temps.clear();
 							ss.str(temp);
 						}
 						else
 						{
-							leaf.push_back(temps);
-							break;
+							bool isexit = false;
+							for (int i = 0; i < leaf.size(); i++)
+							{
+								//std::cout << leaf[i] << "--->" << temp;
+								if (leaf[i] == temp)
+								{
+									isexit = true;
+									break;
+								}
+							}
+							if (isexit == false)
+								leaf.push_back(temps);
 						}
+						break;
 					}
 					else {
-						leaf.push_back(temps);
+						bool isexit = false;
+						for (int i = 0; i < leaf.size(); i++)
+						{
+							if (leaf[i] == temp)
+							{
+								isexit = true;
+								break;
+							}
+						}
+						if(isexit==false)
+							leaf.push_back(temps);
 					}
 					//if (temps == "\\") isnewline = true;
 					//else
@@ -111,7 +142,10 @@ void Inputdeal(std::string filename) {
 					
 					
 				}
-				if (leaf.size() == 1) specialcase = true;
+				if (leaf.size() == 1)
+				{
+					specialcase = true;
+				}
 				
 				
 			}
@@ -133,6 +167,7 @@ void Inputdeal(std::string filename) {
 			{
 				if (specialcase == true)
 				{
+					specialcase = false;
 					it = outputnode.find(leaf[0]);
 					if (it != outputnode.end())
 					{
@@ -170,6 +205,9 @@ void Inputdeal(std::string filename) {
 							if (temps == "\\")
 							{
 								inputfile.getline(temp, std::size(temp));
+								ss.clear();
+								ss.str("");
+								temps.clear();
 								ss.str(temp);
 
 							}
@@ -308,7 +346,27 @@ void outAncient() {
 	//out
 		if (isfindp == false && isfinds == false)
 		{
-			std::cout << "node " << str << " does not exist\n";
+			bool reall = false;
+			for (int i = 0; i < recordInputnode; i++)
+			{
+				if (str == Inputnode[i]) {
+					reall = true;
+					break;
+				}
+			}
+			for (int i = 0; i < recordOutputnode; i++)
+			{
+				if (str == Outputnode[recordOutputnode])
+				{
+					reall = true;
+					break;
+				}
+			}
+			if(!reall)
+				std::cout << "node " << str << " does not exist\n";
+			else
+				std::cout << "node " << str << " exist. But not use\n";
+
 		}
 		else
 		{
