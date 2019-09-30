@@ -5,6 +5,7 @@
 #include<vector>
 #include<fstream>
 #include<set>
+const int LEN_LENGTH=99999;
 std::string blifname; //blif專案名
 std::string Inputnode[999999]; //底層node
 std::string Outputnode[999999]; //輸出node
@@ -88,7 +89,7 @@ void Inputdeal(std::string filename) {
 				outputs = false;
 				names = true;
 				modles = false;
-				inputfile.getline(temp, std::size(temp));
+				inputfile.getline(temp,LEN_LENGTH);
 				std::stringstream ss;
 				ss.str(temp);
 				std::string temps;
@@ -100,7 +101,7 @@ void Inputdeal(std::string filename) {
 						if (temps == "\\")
 						{
 							//leaf.push_back(temps);
-							inputfile.getline(temp, std::size(temp));
+							inputfile.getline(temp,LEN_LENGTH);
 							ss.clear();
 							ss.str("");
 							temps.clear();
@@ -193,7 +194,7 @@ void Inputdeal(std::string filename) {
 							func += "' ";
 						}
 					}
-					inputfile.getline(temp, std::size(temp));
+					inputfile.getline(temp,LEN_LENGTH);
 					std::stringstream ss;
 					ss.str(temp);
 					std::string temps;
@@ -204,7 +205,7 @@ void Inputdeal(std::string filename) {
 						{
 							if (temps == "\\")
 							{
-								inputfile.getline(temp, std::size(temp));
+								inputfile.getline(temp,LEN_LENGTH);
 								ss.clear();
 								ss.str("");
 								temps.clear();
@@ -256,7 +257,7 @@ void Inputdeal(std::string filename) {
 
 		}
 		else {
-			 inputfile.getline(temp, std::size(temp));
+			 inputfile.getline(temp,LEN_LENGTH);
 		}
 
 	}
@@ -399,12 +400,13 @@ void outfunction()
 	std::cout << "END\n";
 }
 
-int main()
+int main(int argc,char* argv[])
 {
-	std::string name = "test.blif";
+	//std::string name = "test.blif";
+	std::string name=argv[1];
 	Inputdeal(name);
 	outAncient();
 	outfunction();
-	system("pause");
+	//system("pause");
 	return 0;
 }
