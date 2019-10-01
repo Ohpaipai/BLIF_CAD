@@ -5,7 +5,7 @@
 #include<vector>
 #include<fstream>
 #include<set>
-const int LEN_LENGTH=99999;
+const int LEN_LENGTH = 99999;
 std::string blifname; //blif專案名
 std::string Inputnode[999999]; //底層node
 std::string Outputnode[999999]; //輸出node
@@ -32,16 +32,16 @@ void Inputdeal(std::string filename) {
 	std::vector<std::string>leaf;
 	std::string paragraph;
 	while (1) {
-		
+
 		inputfile >> paragraph;
 
 		if (paragraph[0] != '#') //本行為註解
 		{
 			//讀檔結束
-			if (paragraph == ".end") break; 
+			if (paragraph == ".end") break;
 			//換行符號
-			else if(paragraph=="\\")
-			{ 
+			else if (paragraph == "\\")
+			{
 			}
 			else if (paragraph == ".model")
 			{
@@ -89,19 +89,23 @@ void Inputdeal(std::string filename) {
 				outputs = false;
 				names = true;
 				modles = false;
-				inputfile.getline(temp,LEN_LENGTH);
+				inputfile.getline(temp, LEN_LENGTH);
 				std::stringstream ss;
 				ss.str(temp);
 				std::string temps;
 				while (1)
 				{
 					ss >> temps;
+					if (temps[0] == '#') {
+						break;
+
+					}
 					if (ss.eof())
 					{
 						if (temps == "\\")
 						{
 							//leaf.push_back(temps);
-							inputfile.getline(temp,LEN_LENGTH);
+							inputfile.getline(temp, LEN_LENGTH);
 							ss.clear();
 							ss.str("");
 							temps.clear();
@@ -134,24 +138,24 @@ void Inputdeal(std::string filename) {
 								break;
 							}
 						}
-						if(isexit==false)
+						if (isexit == false)
 							leaf.push_back(temps);
 					}
 					//if (temps == "\\") isnewline = true;
 					//else
 						//leaf.push_back(temps);
-					
-					
+
+
 				}
 				if (leaf.size() == 1)
 				{
 					specialcase = true;
 				}
-				
-				
+
+
 			}
-			else if(inputs)
-			{ 
+			else if (inputs)
+			{
 				Inputnode[recordInputnode] = paragraph;
 				recordInputnode++;
 			}
@@ -160,12 +164,13 @@ void Inputdeal(std::string filename) {
 				Outputnode[recordOutputnode] = paragraph;
 				recordOutputnode++;
 			}
-			else if(modles)
+			else if (modles)
 			{
 				blifname = paragraph;
 			}
 			else if (names)
 			{
+
 				if (specialcase == true)
 				{
 					specialcase = false;
@@ -194,18 +199,21 @@ void Inputdeal(std::string filename) {
 							func += "' ";
 						}
 					}
-					inputfile.getline(temp,LEN_LENGTH);
+					inputfile.getline(temp, LEN_LENGTH);
 					std::stringstream ss;
 					ss.str(temp);
 					std::string temps;
 					while (1)
 					{
 						ss >> temps;
+						if (temps[0] == '#') {
+							break;
+						}
 						if (ss.eof())
 						{
 							if (temps == "\\")
 							{
-								inputfile.getline(temp,LEN_LENGTH);
+								inputfile.getline(temp, LEN_LENGTH);
 								ss.clear();
 								ss.str("");
 								temps.clear();
@@ -257,15 +265,17 @@ void Inputdeal(std::string filename) {
 
 		}
 		else {
-			 inputfile.getline(temp,LEN_LENGTH);
+			inputfile.getline(temp, LEN_LENGTH);
 		}
 
 	}
-	
-	
 
+
+	inputfile.close();
 }
 void outAncient() {
+	//std::ofstream ofile;
+	//ofile.open("function.out", std::ios::out);
 	std::string str;
 	bool isfindp = false;
 	bool isfinds = false;
@@ -280,22 +290,22 @@ void outAncient() {
 		isfinds = false;
 		std::cout << "Please input a node:";
 		std::cin >> str;
-		
+
 		if (str == "0") break;
-		
+
 		it = outputnode.find(str);
 		if (it == outputnode.end()) {}
 		else {
 			isfindp = true;
 			//std::cout << "predecessor : ";
-			if ((it->second == "1" || it->second == "0")&&it->second.length()==1) predecessor.insert("-");
+			if ((it->second == "1" || it->second == "0") && it->second.length() == 1) predecessor.insert("-");
 			else {
 				std::stringstream ss;
 				ss.str(it->second);
 				std::string tempswww;
 				while (1) {
 					ss >> tempswww;
-					if (tempswww == "(" || tempswww == ")'"||tempswww=="+") {}
+					if (tempswww == "(" || tempswww == ")'" || tempswww == "+") {}
 					if (tempswww[tempswww.length() - 1] == '\'')
 					{
 						std::string hj;
@@ -306,7 +316,7 @@ void outAncient() {
 						predecessor.insert(hj);
 					}
 					else {
-						if (tempswww == "0" || tempswww == "1"||tempswww=="+"|| tempswww == "(" || tempswww == ")'")
+						if (tempswww == "0" || tempswww == "1" || tempswww == "+" || tempswww == "(" || tempswww == ")'")
 						{
 						}
 						else {
@@ -319,32 +329,32 @@ void outAncient() {
 			}
 
 		}
-			
-			//std::cout << "\nsuccessor: ";
-			for (it = outputnode.begin(); it != outputnode.end(); it++)
-			{
-				std::stringstream ss;
-				ss.str(it->second);
-				std::string tempswww;
-				while (1) {
-					ss >> tempswww;
-					std::string strsec = str + "'";
-					if (tempswww == str || tempswww == strsec)
-					{
-						isfinds = true;
-						successor.insert(it->first);
-					}
 
-					if (ss.eof()) break;
-
+		//std::cout << "\nsuccessor: ";
+		for (it = outputnode.begin(); it != outputnode.end(); it++)
+		{
+			std::stringstream ss;
+			ss.str(it->second);
+			std::string tempswww;
+			while (1) {
+				ss >> tempswww;
+				std::string strsec = str + "'";
+				if (tempswww == str || tempswww == strsec)
+				{
+					isfinds = true;
+					successor.insert(it->first);
 				}
+
+				if (ss.eof()) break;
+
 			}
+		}
 
-			
 
-		
-		
-	//out
+
+
+
+		//out
 		if (isfindp == false && isfinds == false)
 		{
 			bool reall = false;
@@ -363,10 +373,18 @@ void outAncient() {
 					break;
 				}
 			}
-			if(!reall)
+			if (!reall)
+			{
 				std::cout << "node " << str << " does not exist\n";
+				//ofile<< "node " << str << " does not exist\n";
+			}
 			else
-				std::cout << "node " << str << " exist. But not use\n";
+			{
+				//ofile << "predecessor : -\n";
+				//ofile<< "\nsuccessor: -\n";
+				std::cout << "predecessor : -\n";
+				std::cout << "successor: -\n";
+			}
 
 		}
 		else
@@ -374,36 +392,62 @@ void outAncient() {
 			if (isfindp == false) predecessor.insert("-");
 			if (isfinds == false)successor.insert("-");
 			std::cout << "predecessor : ";
+			//ofile<< "predecessor : ";
 			for (iter = predecessor.begin(); iter != predecessor.end(); iter++)
 			{
-				if (iter == predecessor.begin()) std::cout << *iter;
-				else std::cout << " , " << *iter;
+				if (iter == predecessor.begin())
+				{
+					std::cout << *iter;
+					//ofile << *iter;
+				}
+				else {
+					std::cout << " , " << *iter;
+					//ofile << " , " << *iter;
+				}
 			}
 			std::cout << "\nsuccessor: ";
+			//ofile << "\nsuccessor: ";
 			for (iter = successor.begin(); iter != successor.end(); iter++)
 			{
-				if (iter == successor.begin()) std::cout << *iter;
-				else std::cout << " , " << *iter;
+				if (iter == successor.begin())
+				{
+					std::cout << *iter;
+					//ofile << *iter;
+				}
+				else
+				{
+					std::cout << " , " << *iter;
+
+					//ofile << " , " << *iter;
+				}
 			}
 			std::cout << "\n";
+			//ofile << "\n";
 		}
-		
+
 	}
 }
 void outfunction()
 {
+	std::ofstream ofile;
+	ofile.open("function.out", std::ios::out);
+
 	std::cout << "Node function:\n";
+	ofile<< "Node function:\n";
 	for (it = outputnode.begin(); it != outputnode.end(); it++)
 	{
 		std::cout << it->first << " = " << it->second << "\n";
+		ofile<< it->first << " = " << it->second << "\n";
 	}
 	std::cout << "END\n";
+	ofile<< "END\n";
+	ofile.close();
 }
 
-int main(int argc,char* argv[])
+int main(int argc, char* argv[])
 {
 	//std::string name = "test.blif";
-	std::string name=argv[1];
+	std::string name = argv[1];
 	Inputdeal(name);
 	outAncient();
 	outfunction();
