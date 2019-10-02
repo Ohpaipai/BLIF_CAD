@@ -125,8 +125,9 @@ void Inputdeal(std::string filename) {
 							}
 							if (isexit == false)
 								leaf.push_back(temps);
+							break;
 						}
-						break;
+						
 					}
 					else {
 						bool isexit = false;
